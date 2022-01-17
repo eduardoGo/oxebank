@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:openbank/communication/lib/api.dart';
+import 'package:provider/provider.dart';
 
 class RememberBox extends StatefulWidget {
   const RememberBox({Key? key}) : super(key: key);
@@ -46,6 +48,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  String? cpf;
+  String? password;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -71,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   const Text(
-                    'Open Bank',
+                    'Oxe Bank',
                     style: TextStyle(
                       fontFamily: 'PT-Sans',
                       fontSize: 30,
@@ -93,10 +98,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const InputField(
+                  InputField(
                     hintText: 'Enter your CPF',
                     obscureText: false,
-                    prefixedIcon: Icon(
+                    inputResult: (input) => cpf = input,
+                    prefixedIcon: const Icon(
                       Icons.perm_identity_rounded,
                       color: Colors.white,
                     ),
@@ -115,61 +121,33 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const InputField(
+                  InputField(
+                    inputResult: (input) => password = input,
                     hintText: 'Enter your password',
                     obscureText: true,
-                    prefixedIcon: Icon(Icons.lock, color: Colors.white),
+                    prefixedIcon: const Icon(Icons.lock, color: Colors.white),
                   ),
                   const SizedBox(height: 15),
                   const ForgotPasswordButton(),
                   const RememberBox(),
                   const SizedBox(height: 15),
-                  const LoginButton(),
+                  LoginButton(
+                    onPressed: () {
+                      print('pressed with $cpf and $password');
+                      if (cpf != null && password != null) {
+                        context
+                            .read<Communication>()
+                            .login(cpf: cpf!, password: password!);
+                        Navigator.pushNamed(context, '/home');
+                      }
+                    },
+                  ),
                   const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class LoginButton extends StatelessWidget {
-  const LoginButton({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 64,
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(
-            Colors.white,
-          ),
-          elevation: MaterialStateProperty.all(6),
-          shape: MaterialStateProperty.all(
-            const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-            ),
-          ),
-        ),
-        child: const Text(
-          'Login',
-          style: TextStyle(
-            fontFamily: 'PT-Sans',
-            fontSize: 16,
-            // fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        onPressed: () {},
       ),
     );
   }
@@ -206,16 +184,19 @@ class InputField extends StatelessWidget {
     Widget? prefixedIcon,
     String? hintText,
     TextInputType inputType = TextInputType.number,
+    required Function(String) inputResult,
   })  : _obscureText = obscureText,
         _prefixedIcon = prefixedIcon,
         _hintText = hintText,
         _inputType = inputType,
+        _inputResult = inputResult,
         super(key: key);
 
   final bool _obscureText;
   final Widget? _prefixedIcon;
   final String? _hintText;
   final TextInputType _inputType;
+  final Function(String) _inputResult;
 
   @override
   Widget build(BuildContext context) {
@@ -228,6 +209,7 @@ class InputField extends StatelessWidget {
         cursorWidth: 2,
         obscureText: _obscureText,
         style: const TextStyle(color: Colors.white),
+        onChanged: _inputResult,
         decoration: InputDecoration(
           border: InputBorder.none,
           filled: true,
@@ -244,3 +226,64 @@ class InputField extends StatelessWidget {
     );
   }
 }
+
+class LoginButton extends StatelessWidget {
+  const LoginButton({
+    Key? key,
+    required Function() onPressed,
+  })  : _onPressed = onPressed,
+        super(key: key);
+
+  final Function() _onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 64,
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(
+            Colors.white,
+          ),
+          elevation: MaterialStateProperty.all(6),
+          shape: MaterialStateProperty.all(
+            const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(10),
+              ),
+            ),
+          ),
+        ),
+        child: const Text(
+          'Login',
+          style: TextStyle(
+            fontFamily: 'PT-Sans',
+            fontSize: 16,
+            // fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        onPressed: _onPressed,
+      ),
+    );
+  }
+}
+
+// Route _routeToHome() {
+//   return PageRouteBuilder(
+//     pageBuilder: (context, animation, secondaryAnimation) => const Page2(),
+//     transitionsBuilder: (context, animation, secondaryAnimation, child) {
+//       const begin = Offset(0.0, 1.0);
+//       const end = Offset.zero;
+//       const curve = Curves.ease;
+
+//       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+//       return SlideTransition(
+//         position: animation.drive(tween),
+//         child: child,
+//       );
+//     },
+//   );
+// }

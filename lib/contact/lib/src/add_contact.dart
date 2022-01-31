@@ -1,59 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:openbank/communication/lib/api.dart';
+import 'package:openbank/utils/constants/lib/api.dart';
+import 'package:openbank/utils/user/lib/api.dart';
 import 'package:openbank/utils/user/lib/src/user_provider.dart';
 import 'package:provider/provider.dart';
 
-class RememberBox extends StatefulWidget {
-  const RememberBox({Key? key}) : super(key: key);
+class AddContact extends StatefulWidget {
+  const AddContact({Key? key}) : super(key: key);
 
   @override
-  _RememberBoxState createState() => _RememberBoxState();
+  State<AddContact> createState() => _AddContactState();
 }
 
-class _RememberBoxState extends State<RememberBox> {
-  bool? isChecked = false;
+class _AddContactState extends State<AddContact> {
+  String? friendName;
+  String dropdownValue = 'Email';
+  String? chavePix;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          value: isChecked,
-          onChanged: (value) {
-            setState(() {
-              isChecked = value;
-            });
-          },
-          checkColor: Colors.black,
-          fillColor: MaterialStateProperty.all(Colors.white),
-        ),
-        const Text(
-          'Remember me',
-          style: TextStyle(
-            fontFamily: 'PT-Sans',
-            fontSize: 14,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
-}
+    final userProvider = context.read<UserProvider>();
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
-
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  String? cpf;
-  String? password;
-
-  @override
-  Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -77,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   const Text(
-                    'Oxe Bank',
+                    'Adicionar contato',
                     style: TextStyle(
                       fontFamily: 'PT-Sans',
                       fontSize: 30,
@@ -89,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     alignment: Alignment.centerLeft,
                     child: const Text(
-                      'CPF',
+                      'Nome',
                       style: TextStyle(
                         fontFamily: 'PT-Sans',
                         fontSize: 16,
@@ -100,9 +68,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 10),
                   InputField(
-                    hintText: 'Enter your CPF',
+                    hintText: 'Nome do seu amigo',
                     obscureText: false,
-                    inputResult: (input) => cpf = input,
+                    inputResult: (input) => friendName = input,
                     prefixedIcon: const Icon(
                       Icons.perm_identity_rounded,
                       color: Colors.white,
@@ -112,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     alignment: Alignment.centerLeft,
                     child: const Text(
-                      'Password',
+                      'Chave pix',
                       style: TextStyle(
                         fontFamily: 'PT-Sans',
                         fontSize: 16,
@@ -122,27 +90,91 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  InputField(
-                    inputResult: (input) => password = input,
-                    hintText: 'Enter your password',
-                    obscureText: true,
-                    prefixedIcon: const Icon(Icons.lock, color: Colors.white),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        child: DropdownButton<String>(
+                          value: dropdownValue,
+                          icon: const Icon(Icons.arrow_downward),
+                          elevation: 16,
+                          style: const TextStyle(color: Colors.deepPurple),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              dropdownValue = newValue!;
+                            });
+                          },
+                          items: <String>[
+                            'Email',
+                            'Celular',
+                            'Chave aleatória',
+                            'CPF'
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      Expanded(
+                        // width: MediaQuery.of(context).size.width * 0.45,
+                        child: dropdownValue != 'Chave aleatória'
+                            ? InputField(
+                                hintText: 'Digite a chave pix ($dropdownValue)',
+                                obscureText: false,
+                                inputResult: (input) => chavePix = input,
+                                prefixedIcon: const Icon(
+                                  Icons.perm_identity_rounded,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Container(),
+                      ),
+                    ],
                   ),
+                  // const SizedBox(height: 10),
+                  // InputField(
+                  //   inputResult: (input) => password = input,
+                  //   hintText: 'Enter your password',
+                  //   obscureText: true,
+                  //   prefixedIcon: const Icon(Icons.lock, color: Colors.white),
+                  // ),
                   const SizedBox(height: 15),
-                  const ForgotPasswordButton(),
-                  const RememberBox(),
-                  const SizedBox(height: 15),
-                  LoginButton(
+                  FinishButton(
                     onPressed: () {
-                      print('pressed with $cpf and $password');
-                      if (cpf != null && password != null) {
-                        context.read<Communication>().login(
-                            context.read<UserProvider>(),
-                            cpf: cpf!,
-                            password: password!);
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, '/home', (route) => false);
+                      print('pressed with $friendName');
+                      if (friendName != null &&
+                          userProvider.hasLoggedUser &&
+                          (chavePix != null ||
+                              dropdownValue.contains('Chave'))) {
+                        Friend newFriend = Friend(friendName!);
+
+                        newFriend.addPixKey(
+                            convertFromString(dropdownValue),
+                            !dropdownValue.contains('Chave')
+                                ? chavePix!
+                                : 'jkasdh7812y3as564da5');
+                        userProvider.addFriend(newFriend);
+                        if (!Navigator.of(context).canPop())
+                          print('CANNOT POP');
+                        Navigator.of(context).pop();
+                      } else {
+                        print(
+                          'DEBUG: friendName: $friendName, hasLloggedUser: ${userProvider.hasLoggedUser}, chavePix: $chavePix, dropValue: $dropdownValue',
+                        );
                       }
+                      // if (cpf != null && password != null) {
+                      //   context
+                      //       .read<userProvider>()
+                      //       .login(cpf: cpf!, password: password!);
+                      //   Navigator.pushNamedAndRemoveUntil(
+                      //       context, '/home', (route) => false);
+                      // }
                     },
                   ),
                   const SizedBox(height: 20),
@@ -151,30 +183,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class ForgotPasswordButton extends StatelessWidget {
-  const ForgotPasswordButton({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.centerRight,
-      child: TextButton(
-        child: const Text(
-          'Forgot Password?',
-          style: TextStyle(
-            fontFamily: 'PT-Sans',
-            fontSize: 14,
-            color: Colors.white,
-          ),
-        ),
-        onPressed: () {},
       ),
     );
   }
@@ -230,8 +238,8 @@ class InputField extends StatelessWidget {
   }
 }
 
-class LoginButton extends StatelessWidget {
-  const LoginButton({
+class FinishButton extends StatelessWidget {
+  const FinishButton({
     Key? key,
     required Function() onPressed,
   })  : _onPressed = onPressed,
@@ -259,7 +267,7 @@ class LoginButton extends StatelessWidget {
           ),
         ),
         child: const Text(
-          'Login',
+          'Adicionar',
           style: TextStyle(
             fontFamily: 'PT-Sans',
             fontSize: 16,
@@ -272,21 +280,3 @@ class LoginButton extends StatelessWidget {
     );
   }
 }
-
-// Route _routeToHome() {
-//   return PageRouteBuilder(
-//     pageBuilder: (context, animation, secondaryAnimation) => const Page2(),
-//     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-//       const begin = Offset(0.0, 1.0);
-//       const end = Offset.zero;
-//       const curve = Curves.ease;
-
-//       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-//       return SlideTransition(
-//         position: animation.drive(tween),
-//         child: child,
-//       );
-//     },
-//   );
-// }

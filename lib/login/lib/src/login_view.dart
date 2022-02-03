@@ -29,7 +29,7 @@ class _RememberBoxState extends State<RememberBox> {
           fillColor: MaterialStateProperty.all(Colors.white),
         ),
         const Text(
-          'Remember me',
+          'Lembre-me',
           style: TextStyle(
             fontFamily: 'PT-Sans',
             fontSize: 14,
@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 10),
                   InputField(
-                    hintText: 'Enter your CPF',
+                    hintText: 'Entre com o CPF',
                     obscureText: false,
                     inputResult: (input) => cpf = input,
                     prefixedIcon: const Icon(
@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     alignment: Alignment.centerLeft,
                     child: const Text(
-                      'Password',
+                      'Senha',
                       style: TextStyle(
                         fontFamily: 'PT-Sans',
                         fontSize: 16,
@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 10),
                   InputField(
                     inputResult: (input) => password = input,
-                    hintText: 'Enter your password',
+                    hintText: 'Entre com a senha',
                     obscureText: true,
                     prefixedIcon: const Icon(Icons.lock, color: Colors.white),
                   ),
@@ -167,7 +167,7 @@ class ForgotPasswordButton extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: TextButton(
         child: const Text(
-          'Forgot Password?',
+          'Esqueceu a senha?',
           style: TextStyle(
             fontFamily: 'PT-Sans',
             fontSize: 14,
@@ -259,7 +259,7 @@ class LoginButton extends StatelessWidget {
           ),
         ),
         child: const Text(
-          'Login',
+          'Entrar',
           style: TextStyle(
             fontFamily: 'PT-Sans',
             fontSize: 16,

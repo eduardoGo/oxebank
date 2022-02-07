@@ -17,6 +17,17 @@ class TransferKey extends StatefulWidget {
 
 class _TransferKeyState extends State<TransferKey> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final userProvider = context.read<UserProvider>();
+
+    userProvider.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
 
@@ -99,9 +110,7 @@ class _TransferKeyState extends State<TransferKey> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.white,
           tooltip: 'Adicionar contato',
-          onPressed: () => Navigator.of(context)
-              .pushNamed('/addContact')
-              .then((value) => setState(() {})),
+          onPressed: () => Navigator.of(context).pushNamed('/addContact'),
           child: const Icon(Icons.add, color: Colors.black, size: 35),
         ));
   }

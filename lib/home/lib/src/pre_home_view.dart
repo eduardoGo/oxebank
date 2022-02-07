@@ -12,7 +12,7 @@ class PreHomeView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const Text(
-          'Loding...\nPlease wait',
+          'Carregando...\nPor favor aguarde',
           style: TextConstants.defaultTextStyle,
           textAlign: TextAlign.center,
         ),

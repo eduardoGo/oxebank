@@ -20,8 +20,8 @@ class User extends ChangeNotifier {
   final String _agency;
   final String _account;
   final List<Friend> _friends = [];
-  int _balanceMainAccount = 0;
-  int _balanceInvestmentAccount = 0;
+  double _balanceMainAccount = 0;
+  double _balanceInvestmentAccount = 0;
 
   get name => _name;
   get cpf => _cpf;
@@ -37,9 +37,9 @@ class User extends ChangeNotifier {
 
   List<Friend> getAllFriends() => _friends;
 
-  int get balance => _balanceMainAccount;
+  double get balance => _balanceMainAccount;
 
-  int get investmentBalance => _balanceInvestmentAccount;
+  double get investmentBalance => _balanceInvestmentAccount;
 
   void addBalanceMain(int value) {
     if (value > 0) _balanceMainAccount += value;

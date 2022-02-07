@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:openbank/communication/lib/api.dart';
 import 'package:openbank/contact/lib/src/add_contact.dart';
 import 'package:openbank/home/lib/api.dart';
+import 'package:openbank/loan/lib/src/loan.dart';
 import 'package:openbank/login/lib/api.dart';
+import 'package:openbank/login/lib/src/register_view.dart';
 import 'package:openbank/transfer/lib/api.dart';
 import 'package:openbank/transfer/lib/src/choose_contact.dart';
 import 'package:openbank/transfer/lib/src/transfer_value.dart';
@@ -55,6 +57,8 @@ class MyApp extends StatelessWidget {
           '/choose_contact': (context) => const ChooseContact(),
           '/addContact': (context) => const AddContact(),
           '/transfer_value': (context) => const TransferValue(),
+          '/register': (context) => const RegisterView(),
+          '/loan': (context) => const Loan(),
         },
         home: const LoginScreen(),
       ),

@@ -1,59 +1,43 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:openbank/utils/common/lib/api.dart';
+import 'package:openbank/utils/constants/lib/api.dart';
+import 'package:openbank/utils/constants/lib/src/text.dart';
+import 'package:openbank/utils/debug/lib/flags.dart';
+import 'package:openbank/utils/user/lib/src/friend.dart';
 import 'package:openbank/communication/lib/api.dart';
+import 'package:openbank/utils/user/lib/api.dart';
 import 'package:openbank/utils/user/lib/src/user_provider.dart';
 import 'package:provider/provider.dart';
 
-class RememberBox extends StatefulWidget {
-  const RememberBox({Key? key}) : super(key: key);
+class Loan extends StatefulWidget {
+  const Loan({Key? key}) : super(key: key);
 
   @override
-  _RememberBoxState createState() => _RememberBoxState();
+  _LoanState createState() => _LoanState();
 }
 
-class _RememberBoxState extends State<RememberBox> {
-  bool? isChecked = false;
+class _LoanState extends State<Loan> {
+  int value = 0;
+  int meses = 1;
 
+  final textStyleInfos = const TextStyle(
+    fontFamily: 'PT-Sans',
+    fontSize: 16,
+    // fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          value: isChecked,
-          onChanged: (value) {
-            setState(() {
-              isChecked = value;
-            });
-          },
-          checkColor: Colors.black,
-          fillColor: MaterialStateProperty.all(Colors.white),
-        ),
-        const Text(
-          'Remember me',
-          style: TextStyle(
-            fontFamily: 'PT-Sans',
-            fontSize: 14,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
-}
+    final externalCommunication = context.watch<Communication>();
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+    final userProvider = context.watch<UserProvider>();
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
+    final avaliableLoan = userProvider.loggedUser!.balance * 3;
 
-class _LoginScreenState extends State<LoginScreen> {
-  String? cpf;
-  String? password;
-
-  @override
-  Widget build(BuildContext context) {
+    final futureValue =
+        value > avaliableLoan ? 0 : value * pow(1 + 0.015, meses);
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -77,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   const Text(
-                    'Oxe Bank',
+                    'Empréstimo',
                     style: TextStyle(
                       fontFamily: 'PT-Sans',
                       fontSize: 30,
@@ -89,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     alignment: Alignment.centerLeft,
                     child: const Text(
-                      'CPF',
+                      'Valor',
                       style: TextStyle(
                         fontFamily: 'PT-Sans',
                         fontSize: 16,
@@ -100,11 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 10),
                   InputField(
-                    hintText: 'Enter your CPF',
+                    hintText: 'Digite o valor que deseja',
                     obscureText: false,
-                    inputResult: (input) => cpf = input,
+                    inputResult: (input) =>
+                        setState(() => value = int.parse(input as String)),
                     prefixedIcon: const Icon(
-                      Icons.perm_identity_rounded,
+                      Icons.attach_money,
                       color: Colors.white,
                     ),
                   ),
@@ -112,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     alignment: Alignment.centerLeft,
                     child: const Text(
-                      'Password',
+                      'Tempo (meses)',
                       style: TextStyle(
                         fontFamily: 'PT-Sans',
                         fontSize: 16,
@@ -123,67 +108,62 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 10),
                   InputField(
-                    inputResult: (input) => password = input,
-                    hintText: 'Enter your password',
-                    obscureText: true,
-                    prefixedIcon: const Icon(Icons.lock, color: Colors.white),
+                    hintText:
+                        'Digite a quantidade de meses em que deseja pagar',
+                    obscureText: false,
+                    inputResult: (input) =>
+                        setState(() => meses = int.parse(input as String)),
+                    prefixedIcon: const Icon(
+                      Icons.timelapse,
+                      color: Colors.white,
+                    ),
                   ),
-                  const SizedBox(height: 15),
-                  const ForgotPasswordButton(),
-                  const RememberBox(),
-                  const SizedBox(height: 15),
-                  LoginButton(
-                    onPressed: () {
-                      print('pressed with $cpf and $password');
-                      if (cpf != null && password != null) {
-                        context.read<Communication>().login(
-                            context.read<UserProvider>(),
-                            cpf: cpf!,
-                            password: password!);
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, '/home', (route) => false);
-                      }
-                    },
+                  const SizedBox(height: 30),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Valor disponível para empréstimo: R\$ $avaliableLoan',
+                      style: textStyleInfos,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Quantidade de meses: $meses',
+                      style: textStyleInfos,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Pagamento mensal: ${(futureValue / meses).toStringAsFixed(2)}',
+                      style: textStyleInfos,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Pagamento total: R\$ ${futureValue.toStringAsFixed(2)}',
+                      style: textStyleInfos,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  FinishButton(
+                    onPressed: value < avaliableLoan
+                        ? () {
+                            print('pressed with $value');
+                          }
+                        : () => null,
                   ),
                   const SizedBox(height: 20),
-                  TextButton(
-                      onPressed: () {
-                        print("Register");
-                        Navigator.of(context).pushNamed('/register');
-                      },
-                      child: const Text(
-                        "Novo aqui? Registre-se",
-                        style: TextStyle(color: Colors.white),
-                      )),
                 ],
               ),
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class ForgotPasswordButton extends StatelessWidget {
-  const ForgotPasswordButton({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.centerRight,
-      child: TextButton(
-        child: const Text(
-          'Forgot Password?',
-          style: TextStyle(
-            fontFamily: 'PT-Sans',
-            fontSize: 14,
-            color: Colors.white,
-          ),
-        ),
-        onPressed: () {},
       ),
     );
   }
@@ -196,7 +176,7 @@ class InputField extends StatelessWidget {
     Widget? prefixedIcon,
     String? hintText,
     TextInputType inputType = TextInputType.number,
-    required Function(String) inputResult,
+    required Function(Object) inputResult,
   })  : _obscureText = obscureText,
         _prefixedIcon = prefixedIcon,
         _hintText = hintText,
@@ -208,7 +188,7 @@ class InputField extends StatelessWidget {
   final Widget? _prefixedIcon;
   final String? _hintText;
   final TextInputType _inputType;
-  final Function(String) _inputResult;
+  final Function(Object) _inputResult;
 
   @override
   Widget build(BuildContext context) {
@@ -239,8 +219,8 @@ class InputField extends StatelessWidget {
   }
 }
 
-class LoginButton extends StatelessWidget {
-  const LoginButton({
+class FinishButton extends StatelessWidget {
+  const FinishButton({
     Key? key,
     required Function() onPressed,
   })  : _onPressed = onPressed,
@@ -268,7 +248,7 @@ class LoginButton extends StatelessWidget {
           ),
         ),
         child: const Text(
-          'Login',
+          'Enviar',
           style: TextStyle(
             fontFamily: 'PT-Sans',
             fontSize: 16,
@@ -281,21 +261,3 @@ class LoginButton extends StatelessWidget {
     );
   }
 }
-
-// Route _routeToHome() {
-//   return PageRouteBuilder(
-//     pageBuilder: (context, animation, secondaryAnimation) => const Page2(),
-//     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-//       const begin = Offset(0.0, 1.0);
-//       const end = Offset.zero;
-//       const curve = Curves.ease;
-
-//       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-//       return SlideTransition(
-//         position: animation.drive(tween),
-//         child: child,
-//       );
-//     },
-//   );
-// }

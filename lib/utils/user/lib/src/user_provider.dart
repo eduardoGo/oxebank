@@ -7,6 +7,7 @@ import 'friend.dart';
 class UserProvider extends ChangeNotifier {
   User? _currentUser;
   Friend? _choosedFriend;
+  final List<User> users = [];
 
   bool get hasLoggedUser => _currentUser != null;
 

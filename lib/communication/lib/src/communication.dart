@@ -37,6 +37,11 @@ class Communication extends ChangeNotifier {
     return true;
   }
 
+  void createUser(UserProvider userProvider, User user) {
+    print("Send a request to server to register the user");
+    userProvider.users.add(user);
+  }
+
   Future<bool> sendTransferTed(
       String code, String agency, String account, int value) async {
     await Future.delayed(const Duration(seconds: 1));

@@ -69,7 +69,7 @@ class _ServicesState extends State<Services> {
           children: [
             IconButton(
               onPressed: () {
-                print(Statement.getStatementMonth(_user));
+                print('Pagamentos');
               },
               icon: const Icon(
                 Icons.payment,
@@ -83,7 +83,7 @@ class _ServicesState extends State<Services> {
             onePercentSpaceBetweenVertical,
             IconButton(
               onPressed: () {
-                print('Empréstimo');
+                Navigator.of(context).pushNamed('/loan');
               },
               icon: const Icon(
                 Icons.attach_money,

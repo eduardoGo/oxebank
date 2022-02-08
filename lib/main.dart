@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:openbank/communication/lib/api.dart';
 import 'package:openbank/contact/lib/src/add_contact.dart';
 import 'package:openbank/home/lib/api.dart';
-import 'package:openbank/loan/lib/src/loan.dart';
+import 'package:openbank/loan/lib/src/list_loans.dart';
+import 'package:openbank/loan/lib/src/loan_view.dart';
+import 'package:openbank/loan/lib/src/loan_provider.dart';
 import 'package:openbank/login/lib/api.dart';
 import 'package:openbank/login/lib/src/register_view.dart';
 import 'package:openbank/transfer/lib/api.dart';
@@ -26,6 +28,7 @@ class MyApp extends StatelessWidget {
           create: (_) => Communication(),
         ),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => LoanProvider()),
       ],
       child: MaterialApp(
         title: 'Oxe bank',
@@ -58,7 +61,8 @@ class MyApp extends StatelessWidget {
           '/addContact': (context) => const AddContact(),
           '/transfer_value': (context) => const TransferValue(),
           '/register': (context) => const RegisterView(),
-          '/loan': (context) => const Loan(),
+          '/list_loan': (context) => const ListLoansView(),
+          '/new_loan': (context) => const LoanView(),
         },
         home: const LoginScreen(),
       ),

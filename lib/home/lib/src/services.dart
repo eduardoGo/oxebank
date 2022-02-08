@@ -83,7 +83,7 @@ class _ServicesState extends State<Services> {
             onePercentSpaceBetweenVertical,
             IconButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/loan');
+                Navigator.of(context).pushNamed('/list_loan');
               },
               icon: const Icon(
                 Icons.attach_money,

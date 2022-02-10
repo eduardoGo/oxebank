@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
           '/choose_contact': (context) => const ChooseContact(),
           '/addContact': (context) => const AddContact(),
           '/transfer_value': (context) => const TransferValue(),
+          // '/MakeLoan': (context) => const Loan(),
         },
         home: const LoginScreen(),
       ),

@@ -67,6 +67,7 @@ class _AddContactState extends State<AddContact> {
                     hintText: 'Nome do seu amigo',
                     obscureText: false,
                     inputResult: (input) => friendName = input,
+                    inputType: TextInputType.name,
                     prefixedIcon: const Icon(
                       Icons.perm_identity_rounded,
                       color: Colors.white,

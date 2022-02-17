@@ -46,8 +46,7 @@ class User extends ChangeNotifier {
   }
 
   void removeBalanceMain(int value) {
-    if (value > 0 && (_balanceMainAccount - value) >= 0)
-      _balanceMainAccount -= value;
+    if (value > 0) _balanceMainAccount -= value;
   }
 
   void addBalanceInvestment(int value) {

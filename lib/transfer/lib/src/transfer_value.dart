@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:openbank/loan/lib/src/loan_provider.dart';
 import 'package:openbank/utils/debug/lib/flags.dart';
 import 'package:openbank/user/lib/api.dart';
 import 'package:openbank/communication/lib/api.dart';
@@ -31,6 +32,13 @@ class _TransferValueState extends State<TransferValue> {
     //     bankCode: '125', agency: '1265-1', account: '154687-1');
     // choosedFriend.addPixKey(KEYS.EMAIL, 'egs@laccan.ufal.br');
     // choosedFriend.choosedPixKey = KEYS.EMAIL;
+
+    final loanProvider = context.watch<LoanProvider>();
+    final values = loanProvider.activeLoans.map((e) => e.valueTotal).toList();
+    final totalValueLoans =
+        values.fold(0, (prev, curr) => (prev as double) + curr);
+
+    final avaliableValue = userProvider.loggedUser!.balance + totalValueLoans;
 
     final choosedKeyIsTed = choosedFriend.choosedPixKey == null;
     return SafeArea(
@@ -81,11 +89,25 @@ class _TransferValueState extends State<TransferValue> {
                   InputField(
                     hintText: 'Valor para transferência',
                     obscureText: false,
-                    inputResult: (input) => value = int.parse(input as String),
+                    inputResult: (input) {
+                      value = int.parse(input as String);
+                      setState(() {});
+                    },
                     prefixedIcon: const Icon(
                       Icons.villa_rounded,
                       color: Colors.white,
                     ),
+                  ),
+                  const SizedBox(height: 30),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Valor disponível: R\$ $avaliableValue',
+                        style: const TextStyle(
+                          fontFamily: 'PT-Sans',
+                          fontSize: 16,
+                          // fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        )),
                   ),
                   const SizedBox(height: 30),
                   Container(
@@ -150,28 +172,34 @@ class _TransferValueState extends State<TransferValue> {
                     ),
                   const SizedBox(height: 30),
                   FinishButton(
-                    onPressed: () {
-                      if (choosedKeyIsTed) {
-                        final temp = choosedFriend.getTedKey(
-                          codeBank: choosedFriend.choosedTedKey!,
-                        );
+                    onPressed: value > avaliableValue
+                        ? null
+                        : () {
+                            print('pressed with $value');
 
-                        externalCommunication.sendTransferTed(
-                          choosedFriend.choosedTedKey!,
-                          temp.keys.first,
-                          temp.values.first,
-                          value,
-                        );
-                      } else {
-                        externalCommunication.sendTransferPix(
-                            choosedFriend.getKey(choosedFriend.choosedPixKey!),
-                            value);
-                      }
-                      if (AppConfig.debugMode)
-                        userProvider.removeBalanceMain(value);
-                      print('pressed with $value');
-                      Navigator.of(context).pushReplacementNamed('/home');
-                    }
+                            if (choosedKeyIsTed) {
+                              final temp = choosedFriend.getTedKey(
+                                codeBank: choosedFriend.choosedTedKey!,
+                              );
+
+                              externalCommunication.sendTransferTed(
+                                choosedFriend.choosedTedKey!,
+                                temp.keys.first,
+                                temp.values.first,
+                                value,
+                              );
+                            } else {
+                              externalCommunication.sendTransferPix(
+                                  choosedFriend
+                                      .getKey(choosedFriend.choosedPixKey!),
+                                  value);
+                            }
+                            if (AppConfig.debugMode) {
+                              userProvider.removeBalanceMain(value);
+                            }
+                            print('pressed with $value');
+                            Navigator.of(context).pushReplacementNamed('/home');
+                          }
                     // if (cpf != null && password != null) {
                     //   context
                     //       .read<userProvider>()
@@ -245,11 +273,11 @@ class InputField extends StatelessWidget {
 class FinishButton extends StatelessWidget {
   const FinishButton({
     Key? key,
-    required Function() onPressed,
+    Function()? onPressed,
   })  : _onPressed = onPressed,
         super(key: key);
 
-  final Function() _onPressed;
+  final Function()? _onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -270,9 +298,9 @@ class FinishButton extends StatelessWidget {
             ),
           ),
         ),
-        child: const Text(
-          'Enviar',
-          style: TextStyle(
+        child: Text(
+          _onPressed == null ? 'Insira outro valor' : 'Enviar',
+          style: const TextStyle(
             fontFamily: 'PT-Sans',
             fontSize: 16,
             // fontWeight: FontWeight.bold,

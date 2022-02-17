@@ -32,7 +32,9 @@ class _LoanViewState extends State<LoanView> {
     final totalLoansGot =
         values.fold(0, (prev, curr) => (prev as double) + curr);
 
-    final avaliableLoan = userProvider.loggedUser!.balance * 3 - totalLoansGot;
+    final avaliableLoan = totalLoansGot > userProvider.loggedUser!.balance * 3
+        ? 0
+        : userProvider.loggedUser!.balance * 3 - totalLoansGot;
 
     final futureValue =
         value >= avaliableLoan + 1 ? 0 : value * pow(1 + 0.015, months);
@@ -153,7 +155,7 @@ class _LoanViewState extends State<LoanView> {
                   ),
                   const SizedBox(height: 30),
                   FinishButton(
-                    onPressed: value <= avaliableLoan
+                    onPressed: value <= avaliableLoan && value > 0
                         ? () {
                             loanProvider.addLoan(
                               Loan(

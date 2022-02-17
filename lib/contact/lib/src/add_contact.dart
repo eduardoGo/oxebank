@@ -103,6 +103,7 @@ class _AddContactState extends State<AddContact> {
                           onChanged: (String? newValue) {
                             setState(() {
                               dropdownValue = newValue!;
+                              chavePix = '';
                             });
                           },
                           items: <String>[
@@ -124,6 +125,8 @@ class _AddContactState extends State<AddContact> {
                             ? InputField(
                                 hintText: 'Digite a chave pix ($dropdownValue)',
                                 obscureText: false,
+                                inputType:
+                                    correspondentInputType(dropdownValue),
                                 inputResult: (input) => chavePix = input,
                                 prefixedIcon: const Icon(
                                   Icons.perm_identity_rounded,
@@ -182,6 +185,15 @@ class _AddContactState extends State<AddContact> {
         ),
       ),
     );
+  }
+}
+
+TextInputType correspondentInputType(String type) {
+  if (type == 'Email') {
+    print('HERE');
+    return TextInputType.emailAddress;
+  } else {
+    return TextInputType.number;
   }
 }
 

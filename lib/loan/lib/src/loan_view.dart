@@ -27,12 +27,15 @@ class _LoanViewState extends State<LoanView> {
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
 
-    final avaliableLoan = userProvider.loggedUser!.balance * 3;
+    final loanProvider = context.watch<LoanProvider>();
+    final values = loanProvider.activeLoans.map((e) => e.valueTotal).toList();
+    final totalLoansGot =
+        values.fold(0, (prev, curr) => (prev as double) + curr);
+
+    final avaliableLoan = userProvider.loggedUser!.balance * 3 - totalLoansGot;
 
     final futureValue =
-        value > avaliableLoan ? 0 : value * pow(1 + 0.015, months);
-
-    final loanProvider = context.watch<LoanProvider>();
+        value >= avaliableLoan + 1 ? 0 : value * pow(1 + 0.015, months);
 
     return SafeArea(
       child: Scaffold(
@@ -150,7 +153,7 @@ class _LoanViewState extends State<LoanView> {
                   ),
                   const SizedBox(height: 30),
                   FinishButton(
-                    onPressed: value < avaliableLoan
+                    onPressed: value <= avaliableLoan
                         ? () {
                             loanProvider.addLoan(
                               Loan(

@@ -1,4 +1,4 @@
-import 'package:openbank/utils/user/lib/api.dart';
+import 'package:openbank/user/lib/api.dart';
 
 class Statement {
   static String getStatementMonth(User user) =>

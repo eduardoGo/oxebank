@@ -10,7 +10,7 @@ import 'package:openbank/login/lib/src/register_view.dart';
 import 'package:openbank/transfer/lib/api.dart';
 import 'package:openbank/transfer/lib/src/choose_contact.dart';
 import 'package:openbank/transfer/lib/src/transfer_value.dart';
-import 'package:openbank/utils/user/lib/src/user_provider.dart';
+import 'package:openbank/user/lib/api.dart';
 import 'package:provider/provider.dart';
 
 void main() {

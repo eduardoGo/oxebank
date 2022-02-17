@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:openbank/communication/lib/api.dart';
-import 'package:openbank/utils/user/lib/src/user_provider.dart';
+import 'package:openbank/user/lib/api.dart';
 import 'package:provider/provider.dart';
 
 class RememberBox extends StatefulWidget {

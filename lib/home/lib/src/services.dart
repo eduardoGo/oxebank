@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:openbank/statement/lib/api.dart';
 import 'package:openbank/utils/constants/lib/api.dart';
-import 'package:openbank/utils/user/lib/api.dart';
-import 'package:openbank/communication/lib/api.dart';
-import 'package:openbank/utils/user/lib/src/user_provider.dart';
+import 'package:openbank/user/lib/api.dart';
 import 'package:provider/provider.dart';
 
 class Services extends StatefulWidget {

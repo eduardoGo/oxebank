@@ -27,43 +27,53 @@ class _ListLoansViewState extends State<ListLoansView> {
     final loansMonths = loans.activeLoans.map((e) => e.months).toList();
 
     return GlobalScaffold.scaffoldApp(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              'Empréstimos em andamento',
-              style: TextConstants.defaultTextStyle,
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.75,
-              child: ListView.separated(
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
-                itemCount: loansValue.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                      child: ListTile(
-                    title: Text(
-                      'Valor total: R\$ ${loansValue[index]}',
-                      style: const TextStyle(color: Colors.black, fontSize: 20),
+        body: loansValue.isEmpty
+            ? const Align(
+                alignment: Alignment(0, -0.3),
+                child: Text(
+                  'Não há empréstimos :)',
+                  style: TextConstants.defaultTextStyle,
+                ),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Empréstimos em andamento',
+                    style: TextConstants.defaultTextStyle,
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.75,
+                    child: ListView.separated(
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Divider(),
+                      itemCount: loansValue.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                            child: ListTile(
+                          title: Text(
+                            'Valor total: R\$ ${loansValue[index]}',
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 20),
+                          ),
+                          subtitle: Text(
+                            'Tempo restante: ${loansMonths[index]} meses',
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 20),
+                          ),
+                          leading: const Icon(Icons.attach_money_outlined),
+                          onTap: null,
+                          // trailing: Icon(icons[index]),
+                        ));
+                      },
                     ),
-                    subtitle: Text(
-                      'Tempo restante: ${loansMonths[index]} meses',
-                      style: const TextStyle(color: Colors.black, fontSize: 20),
-                    ),
-                    leading: const Icon(Icons.attach_money_outlined),
-                    onTap: null,
-                    // trailing: Icon(icons[index]),
-                  ));
-                },
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.white,
           tooltip: 'Novo empréstimo',

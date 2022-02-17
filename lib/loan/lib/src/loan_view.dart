@@ -3,14 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:openbank/loan/lib/src/loan.dart';
 import 'package:openbank/loan/lib/src/loan_provider.dart';
-import 'package:openbank/utils/common/lib/api.dart';
-import 'package:openbank/utils/constants/lib/api.dart';
-import 'package:openbank/utils/constants/lib/src/text.dart';
-import 'package:openbank/utils/debug/lib/flags.dart';
-import 'package:openbank/utils/user/lib/src/friend.dart';
-import 'package:openbank/communication/lib/api.dart';
-import 'package:openbank/utils/user/lib/api.dart';
-import 'package:openbank/utils/user/lib/src/user_provider.dart';
+import 'package:openbank/user/lib/api.dart';
 import 'package:provider/provider.dart';
 
 class LoanView extends StatefulWidget {

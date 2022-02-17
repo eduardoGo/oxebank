@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:openbank/utils/user/lib/api.dart';
 
 import 'user.dart';
 import 'friend.dart';

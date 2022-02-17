@@ -1,7 +1,6 @@
 import 'package:openbank/utils/debug/lib/flags.dart';
-import 'package:openbank/utils/user/lib/api.dart';
 import 'package:flutter/material.dart';
-import 'package:openbank/utils/user/lib/src/user_provider.dart';
+import 'package:openbank/user/lib/api.dart';
 
 class Communication extends ChangeNotifier {
   bool login(UserProvider userProvider,
